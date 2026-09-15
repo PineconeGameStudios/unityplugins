@@ -32,10 +32,12 @@ namespace Apple.GameKit
 
         static GKGameActivity()
         {
+#if UNITY_EDITOR_OSX || (!UNITY_EDITOR && (UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_TVOS || UNITY_VISIONOS))
             if (Availability.IsTypeAvailable<GKGameActivity>())
             {
                 Interop.GKGameActivity_SetWantsToPlayCallback(OnWantsToPlay);
             }
+#endif
         }
 
 #if IOS_19_BETA_1_WANTSTOPLAY_MAIN_THREAD_WORKAROUND

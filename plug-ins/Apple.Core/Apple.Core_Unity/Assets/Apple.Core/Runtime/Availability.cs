@@ -12,7 +12,12 @@ namespace Apple.Core
         private static extern RuntimeEnvironment AppleCore_GetRuntimeEnvironment();
 
         private static RuntimeEnvironment _runtimeEnvironment;
-        public static RuntimeEnvironment RuntimeEnvironment => _runtimeEnvironment.IsUnknown ? (_runtimeEnvironment = AppleCore_GetRuntimeEnvironment()) : _runtimeEnvironment;
+        public static RuntimeEnvironment RuntimeEnvironment =>
+#if UNITY_EDITOR_OSX || (!UNITY_EDITOR && (UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_TVOS || UNITY_VISIONOS))
+            _runtimeEnvironment.IsUnknown ? (_runtimeEnvironment = AppleCore_GetRuntimeEnvironment()) : _runtimeEnvironment;
+#else
+            _runtimeEnvironment;
+#endif
 
         /// <summary>
         /// Use to ensure API methods are only called on platforms which support those calls.
@@ -201,11 +206,13 @@ namespace Apple.Core
         [RuntimeInitializeOnLoadMethod]
         private static void OnApplicationStart()
         {
+#if UNITY_EDITOR_OSX || (!UNITY_EDITOR && (UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_TVOS || UNITY_VISIONOS))
             Debug.Log("[Apple.Core Plug-In Runtime] Initializing API Availability Checking");
 
             var env = RuntimeEnvironment;
 
             Debug.Log($"[Apple.Core Plug-In Runtime] Availability Runtime Environment: {env.RuntimeOperatingSystem.ToString()} {env.VersionNumber.Major}.{env.VersionNumber.Minor}");
+#endif
         }
         #endregion
     }
