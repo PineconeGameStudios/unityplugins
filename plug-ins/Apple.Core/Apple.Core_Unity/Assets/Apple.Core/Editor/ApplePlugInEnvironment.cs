@@ -97,13 +97,24 @@ namespace Apple.Core
         /// </summary>
         private static ListRequest _packageManagerListRequest;
 
+        private const string PackageManagerBatchModeListRequestTimeoutEnvironmentVariable = "APPLE_PACKAGE_MANAGER_LIST_TIMEOUT_SECONDS";
+
         /// <summary>
         /// Time, in seconds, that the package manager list request will wait before failing the list request.
         /// </summary>
         /// <remarks>
         /// The Apple Unity Plug-Ins infrastructure will fail if attempts to access the list of packages fails, so it may be necessary to investigate what would cause timeouts or even to extend the timeout duration.
         /// </remarks>
-        private static int _packageManagerBatchModeListRequestTimeout => 5;
+        private static int _packageManagerBatchModeListRequestTimeout
+        {
+            get
+            {
+                string timeoutValue = Environment.GetEnvironmentVariable(PackageManagerBatchModeListRequestTimeoutEnvironmentVariable);
+                return int.TryParse(timeoutValue, out int timeoutSeconds) && timeoutSeconds > 0
+                    ? timeoutSeconds
+                    : 60;
+            }
+        }
 
         /// <summary>
         /// Collection of all known Apple Unity Plug-In packages
